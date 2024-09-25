@@ -1,0 +1,34 @@
+services:
+    kafka:
+        image: confluentinc/cp-kafka:latest
+        container_name: kafka
+        ports:
+            - '9092:9092'
+        environment:
+            # Identificação do Broker
+            KAFKA_BROKER_ID: 1
+
+            # Utilização do modo KRaft (sem Zookeeper)
+            KAFKA_PROCESS_ROLES: broker ## Define os papeis que o Kafka irá assumir, para usar o KRaft é necessário os dois. Um broker armazena e processa as mensagens e o controller gerencia o cluster.
+            KAFKA_NODE_ID: 1 ## Identificação do nó no cluster. É necessário para o KRaft identificar este broker no cluster.
+            KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092 # Define os protocolos e portas que o Kafka irá escutar.
+            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092 # Define o endereço que o Kafka irá se anunciar para os clientes.
+
+            # Diretórios para logs do Kafka
+            KAFKA_LOG_DIRS: /var/lib/kafka/data #Define onde os dados e os metadados do Kafka serão armazenados no sistema de arquivos.
+
+            # Configurações de metadata
+            KAFKA_METADATA_LOG_DIR: /var/lib/kafka/metadata
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+            KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+            KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+            # Configurações para garantir a replicação de tópicos críticos como o tópico de offsets e logs de transações. Como estamos rodando apenas um broker, o fator de replicação é definido como 1.
+
+            # Tópicos de controle interno
+            KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+
+            # Intervalo de metadados
+            KAFKA_MIN_INSYNC_REPLICAS: 1
+            CLUSTER_ID: first-cluster-id
+        volumes:
+            - ./data:/var/lib/kafka
