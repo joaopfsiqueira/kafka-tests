@@ -28,6 +28,25 @@ services:
         volumes:
             - ./kafka-data:/var/lib/kafka/data
 
+    kafka2: # Novo broker
+        image: confluentinc/cp-kafka:latest
+        depends_on:
+            - zookeeper
+        ports:
+            - 29093:29093
+        networks:
+            - local
+        environment:
+            KAFKA_BROKER_ID: 2
+            KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9092,PLAINTEXT_HOST://localhost:29093
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+            KAFKA_DELETE_TOPIC_ENABLE: 'true'
+        volumes:
+            - ./kafka2-data:/var/lib/kafka/data # Volume separado para o novo broker
+
     kafka-ui:
         image: provectuslabs/kafka-ui
         container_name: kafka-ui
@@ -38,7 +57,7 @@ services:
         restart: always
         environment:
             - KAFKA_CLUSTERS_0_NAME=local
-            - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+            - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092,kafka2:9092 # Adicionei o novo broker aqui
             - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
 
 networks:
