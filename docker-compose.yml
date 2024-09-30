@@ -24,6 +24,7 @@ services:
             KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
             KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
             KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+            KAFKA_DELETE_TOPIC_ENABLE: 'true'
         volumes:
             - ./kafka-data:/var/lib/kafka/data
 
@@ -31,7 +32,7 @@ services:
         image: provectuslabs/kafka-ui
         container_name: kafka-ui
         ports:
-            - '8880:8880'
+            - '8080:8080'
         networks:
             - local
         restart: always
